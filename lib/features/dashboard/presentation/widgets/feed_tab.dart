@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_text.dart';
+import '../../../../core/network/connectivity_cubit.dart';
 import '../bloc/feed_bloc.dart';
 import '../widgets/story_list_widget.dart';
 import '../widgets/filter_pills_widget.dart';
@@ -14,6 +15,56 @@ import '../widgets/feed_skeleton.dart';
 
 class FeedTab extends StatelessWidget {
   const FeedTab({super.key});
+
+  Widget _buildStatusBanner(BuildContext context, FeedState feedState, ConnectivityStatus connectivityStatus) {
+    if (connectivityStatus == ConnectivityStatus.offline) {
+      return Container(
+        padding: EdgeInsets.symmetric(vertical: 8.h),
+        color: AppColors.background,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.wifi_off, size: 16.spMin, color: AppColors.text),
+            SizedBox(width: 8.w),
+            AppText('No internet connection', fontSize: 14, color: AppColors.text),
+            if (feedState is FeedError || (feedState is FeedLoaded && feedState.posts.isEmpty)) ...[
+              SizedBox(width: 12.w),
+              GestureDetector(
+                onTap: () {
+                  context.read<FeedBloc>().refresh();
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(16.r),
+                  ),
+                  child: AppText('Retry', fontSize: 12, color: AppColors.primary, fontWeight: FontWeight.w600),
+                ),
+              ),
+            ],
+          ],
+        ),
+      );
+    }
+    
+    if (feedState is FeedLoading) {
+      return Container(
+        padding: EdgeInsets.symmetric(vertical: 8.h),
+        color: AppColors.background,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CupertinoActivityIndicator(radius: 8.r),
+            SizedBox(width: 8.w),
+            AppText('Loading...', fontSize: 14, color: AppColors.text),
+          ],
+        ),
+      );
+    }
+    
+    return const SizedBox.shrink();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +82,15 @@ class FeedTab extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  BlocBuilder<ConnectivityCubit, ConnectivityStatus>(
+                    builder: (context, connectivityStatus) {
+                      return BlocBuilder<FeedBloc, FeedState>(
+                        builder: (context, feedState) {
+                          return _buildStatusBanner(context, feedState, connectivityStatus);
+                        },
+                      );
+                    },
+                  ),
                   SizedBox(height: 16.h),
                   const StoryListWidget(),
                   SizedBox(height: 16.h),
@@ -50,11 +110,45 @@ class FeedTab extends StatelessWidget {
                           child: const FeedSkeleton(),
                         );
                       } else if (state is FeedError) {
-                        return Padding(
-                          padding: EdgeInsets.symmetric(vertical: 32.h),
-                          child: Center(
-                            child: AppText(state.message, color: Colors.red),
-                          ),
+                        return BlocBuilder<ConnectivityCubit, ConnectivityStatus>(
+                          builder: (context, connectivityStatus) {
+                            return Padding(
+                              padding: EdgeInsets.symmetric(vertical: 32.h),
+                              child: Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      connectivityStatus == ConnectivityStatus.offline
+                                          ? Icons.wifi_off
+                                          : Icons.error_outline,
+                                      size: 48.spMin,
+                                      color: AppColors.hint,
+                                    ),
+                                    SizedBox(height: 16.h),
+                                    AppText(
+                                      connectivityStatus == ConnectivityStatus.offline
+                                          ? 'No internet connection'
+                                          : state.message,
+                                      color: AppColors.text,
+                                    ),
+                                    SizedBox(height: 24.h),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        context.read<FeedBloc>().refresh();
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: AppColors.primary,
+                                        foregroundColor: Colors.white,
+                                        padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
+                                      ),
+                                      child: AppText('Retry', color: Colors.white, fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
                         );
                       } else if (state is FeedLoaded) {
                         final posts = state.posts;

@@ -4,7 +4,6 @@ import '../../domain/entities/user.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../../../core/network/api_exceptions.dart';
 
-// Events
 abstract class ProfileEvent extends Equatable {
   const ProfileEvent();
   @override
@@ -13,7 +12,6 @@ abstract class ProfileEvent extends Equatable {
 
 class ProfileFetched extends ProfileEvent {}
 
-// States
 abstract class ProfileState extends Equatable {
   const ProfileState();
   @override
@@ -36,7 +34,6 @@ class ProfileError extends ProfileState {
   List<Object?> get props => [message];
 }
 
-// Bloc
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final AuthRepository authRepository;
 

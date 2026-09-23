@@ -7,6 +7,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../auth/presentation/bloc/profile_bloc.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../bloc/feed_bloc.dart';
+import '../../../../core/network/connectivity_cubit.dart';
 import '../../../posts/presentation/widgets/post_category_bottom_sheet.dart';
 import '../widgets/bottom_nav_bar_widget.dart';
 import '../widgets/feed_tab.dart';
@@ -30,6 +31,7 @@ class _DashboardPageState extends State<DashboardPage> {
         BlocProvider(create: (_) => sl<ProfileBloc>()..add(ProfileFetched())),
         BlocProvider.value(value: sl<AuthBloc>()),
         BlocProvider(create: (_) => sl<FeedBloc>()..add(FeedFetched())),
+        BlocProvider.value(value: sl<ConnectivityCubit>()),
       ],
       child: Builder(
         builder: (context) {

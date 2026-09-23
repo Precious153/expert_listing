@@ -107,7 +107,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           child: AppTextField(
                             controller: _firstNameController,
                             labelText: 'First Name',
-                            hintText: 'John',
+                            hintText: 'First Name',
                             textInputAction: TextInputAction.next,
                             validator: (val) => Validators.required(val, 'First name is required'),
                           ),
@@ -117,7 +117,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           child: AppTextField(
                             controller: _lastNameController,
                             labelText: 'Last Name',
-                            hintText: 'Doe',
+                            hintText: 'Last Name',
                             textInputAction: TextInputAction.next,
                             validator: (val) => Validators.required(val, 'Last name is required'),
                           ),

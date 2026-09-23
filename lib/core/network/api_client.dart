@@ -10,8 +10,7 @@ class ApiClient {
       : _dio = Dio(
           BaseOptions(
             baseUrl: baseUrl,
-            // connectTimeout: const Duration(seconds: 60),
-            // receiveTimeout: const Duration(seconds: 60),
+
           ),
         ) {
     _dio.interceptors.add(LogInterceptor(responseBody: true, requestBody: true));

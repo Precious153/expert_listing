@@ -38,7 +38,6 @@ class AppRouter {
           return CreatePostScreen(transactionType: type ?? TransactionType.general);
         },
       ),
-      // Future routes for feed, posts, profile will go here
     ],
   );
 }
