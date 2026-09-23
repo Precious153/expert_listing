@@ -10,7 +10,6 @@ import '../widgets/story_list_widget.dart';
 import '../widgets/filter_pills_widget.dart';
 import '../widgets/create_post_input_widget.dart';
 import '../widgets/post_item_widget.dart';
-import '../../../../core/di/injection_container.dart';
 import '../widgets/feed_skeleton.dart';
 
 class FeedTab extends StatelessWidget {
@@ -77,8 +76,18 @@ class FeedTab extends StatelessWidget {
             },
             color: AppColors.primary,
             backgroundColor: AppColors.background,
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
+            child: NotificationListener<ScrollNotification>(
+              onNotification: (ScrollNotification scrollInfo) {
+                if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 200) {
+                  final state = context.read<FeedBloc>().state;
+                  if (state is FeedLoaded && !state.hasReachedMax) {
+                    context.read<FeedBloc>().add(FeedLoadMore());
+                  }
+                }
+                return false;
+              },
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -178,12 +187,26 @@ class FeedTab extends StatelessWidget {
                       return const SizedBox.shrink();
                     },
                   ),
+                  BlocBuilder<FeedBloc, FeedState>(
+                    builder: (context, state) {
+                      if (state is FeedLoaded && !state.hasReachedMax && state.posts.isNotEmpty) {
+                        return Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16.h),
+                          child: Center(
+                            child: CupertinoActivityIndicator(radius: 12.r),
+                          ),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  ),
                   SizedBox(height: 24.h),
                 ],
               ),
             ),
-          );
-        }
+          ),
+        );
+      },
     );
   }
 }

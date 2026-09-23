@@ -14,7 +14,6 @@ class PlaceholderTab extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-
           AppText(
             title,
             fontSize: 20,
