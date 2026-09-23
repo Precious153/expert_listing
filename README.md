@@ -1,17 +1,28 @@
-# expert_listing
+# Expert Listing Dashboard & Feed
 
-A new Flutter project.
+## How to Run It
 
-## Getting Started
+To run this Flutter application locally:
 
-This project is a starting point for a Flutter application.
+1. Ensure you have the Flutter SDK installed and configured.
+2. Clone or open the project directory (`expert_listing`).
+3. Fetch dependencies:
+   ```bash
+   flutter pub get
+   ```
+4. Run the app on your preferred emulator or connected device:
+   ```bash
+   flutter run
+   ```
 
-A few resources to get you started if this is your first Flutter project:
+## Endpoints
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+The app communicates with a backend hosted at `https://expertlisting-60hz.onrender.com`. The key endpoints used by the feed and posts are:
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+* `GET /posts?page={page}&size={size}`: Fetches paginated posts.
+* `POST /posts`: Creates a new post.
+* `GET /posts/{postId}/comments`: Retrieves comments for a specific post.
+* `POST /posts/{postId}/comments`: Adds a comment to a post.
+* `POST /posts/{postId}/like`: Toggles the like status of a post.
+* `DELETE /posts/{postId}`: Deletes a specific post.
+* `POST /uploads/images`: Uploads an image to the server.
